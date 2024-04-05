@@ -1,0 +1,14 @@
+.fruta {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+}
+.snake {
+  width: 30px;
+  height: 30px;
+  background-color: greenyellow;
+}
+.container {
+  display: flex;
+  gap: 2px;
+}
