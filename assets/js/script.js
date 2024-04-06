@@ -1,58 +1,80 @@
-const fruta = document.querySelector('.fruta');
+const canvas = document.querySelector('canvas');
+const contexto = canvas.getContext('2d');
 
-//gerar posicao aleatória
-const eixoXMaximo = window.innerWidth;
-const eixoYMáximo = window.innerHeight;
-const posicaoFruta = {
-  x: 0,
-  y: 0,
-};
+const size = 30;
+const snake = [
+  {
+    x: 300,
+    y: 300,
+  },
+  {
+    x: 330,
+    y: 300,
+  },
+  {
+    x: 360,
+    y: 300,
+  },
+];
 
-function gerarPosicoes() {
-  posicaoFruta.x = Math.floor(Math.random() * (eixoXMaximo + 1));
-  posicaoFruta.y = Math.floor(Math.random() * (eixoYMáximo + 1) * 0.6);
-  atualizarPosicaoFruta();
+function drawSnake() {
+  contexto.fillStyle = '#ddd';
+  snake.forEach((element, index) => {
+    if (index === snake.length - 1) {
+      contexto.fillStyle = '#fff';
+    }
+    setTimeout(() => {});
+    contexto.fillRect(element.x, element.y, size, size);
+  });
+}
+drawSnake();
+
+function limparCanvas() {
+  contexto.clearRect(0, 0, 600, 600);
 }
 
-function atualizarPosicaoFruta() {
-  fruta.style.transform = `translate(${posicaoFruta.x}px, ${posicaoFruta.y}px)`;
-}
+let direction, idLoop;
+function snakeMovement() {
+  const head = snake[snake.length - 1];
+  if (!direction) return;
 
-setInterval(() => {
-  gerarPosicoes();
-}, 4000);
-gerarPosicoes();
-
-const snakeContainer = document.querySelector('.container');
-const cabecaSnake = document.querySelector('.snake');
-const posicaoSnake = {
-  x: 0,
-  y: 0,
-};
-
-function startMovement(event) {
-  if (event.key === 'ArrowRight') {
-    posicaoSnake.x += 20;
-    console.log(posicaoSnake);
-    cabecaSnake.style.transform = `translate(${posicaoSnake.x}px, ${posicaoSnake.y}px )`;
+  if (direction === 'right') {
+    snake.shift();
+    snake.push({ x: head.x + size, y: head.y });
+    limparCanvas();
+    drawSnake();
   }
-
-  if (event.key === 'ArrowLeft') {
-    posicaoSnake.x += -20;
-    console.log(posicaoSnake);
-    cabecaSnake.style.transform = `translate(${posicaoSnake.x}px, ${posicaoSnake.y}px )`;
+  if (direction === 'left') {
+    snake.shift();
+    snake.push({ x: head.x - size, y: head.y });
+    limparCanvas();
+    drawSnake();
   }
-
-  if (event.key === 'ArrowDown') {
-    posicaoSnake.y += 20;
-    console.log(posicaoSnake);
-    cabecaSnake.style.transform = `translate(${posicaoSnake.x}px, ${posicaoSnake.y}px )`;
+  if (direction === 'down') {
+    snake.shift();
+    snake.push({ x: head.x, y: head.y + size });
+    limparCanvas();
+    drawSnake();
   }
-  if (event.key === 'ArrowUp') {
-    posicaoSnake.y += -20;
-    console.log(posicaoSnake);
-    cabecaSnake.style.transform = `translate(${posicaoSnake.x}px, ${posicaoSnake.y}px )`;
+  if (direction === 'up') {
+    snake.shift();
+    snake.push({ x: head.x, y: head.y - size });
+    limparCanvas();
+    drawSnake();
   }
 }
 
-window.addEventListener('keydown', startMovement);
+function gameloop() {
+  clearInterval(idLoop);
+  idLoop = setInterval(() => {
+    snakeMovement();
+  }, 100);
+}
+gameloop();
+
+document.addEventListener('keydown', ({ key }) => {
+  if (key === 'ArrowRight' && direction !== 'left') direction = 'right';
+  if (key === 'ArrowLeft' && direction !== 'right') direction = 'left';
+  if (key === 'ArrowUp' && direction !== 'down') direction = 'up';
+  if (key === 'ArrowDown' && direction !== 'up') direction = 'down';
+});
