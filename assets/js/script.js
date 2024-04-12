@@ -1,7 +1,8 @@
 const canvas = document.querySelector('canvas');
 const contexto = canvas.getContext('2d');
-const audio = new Audio('./assets/audio/audio.mp3');
+const audio = new Audio('./assets/audio/gameBonus.wav');
 const audioFundo = new Audio('./assets/audio/somFundo.mp3');
+const audioGameOver = new Audio('./assets/audio/gameOver.wav');
 const size = 30;
 const snake = [
   {
@@ -156,6 +157,7 @@ function autoColidion() {
 }
 
 function gameover() {
+  audioGameOver.play();
   const displayGameOver = document.querySelector('.gameover');
   displayGameOver.style.display = 'flex';
   contexto.filter = 'blur(4px)';
