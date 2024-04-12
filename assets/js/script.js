@@ -1,6 +1,7 @@
 const canvas = document.querySelector('canvas');
 const contexto = canvas.getContext('2d');
 const audio = new Audio('./assets/audio/audio.mp3');
+const audioFundo = new Audio('./assets/audio/somFundo.mp3');
 const size = 30;
 const snake = [
   {
@@ -52,22 +53,23 @@ function snakeMovement() {
   const head = snake[snake.length - 1];
   if (!direction) return;
 
-  if (direction === 'right') {
+  if (direction === 'right' && direction !== 'left') {
     snake.shift();
     snake.push({ x: head.x + size, y: head.y });
   }
-  if (direction === 'left') {
+  if (direction === 'left' && direction !== 'right') {
     snake.shift();
     snake.push({ x: head.x - size, y: head.y });
   }
-  if (direction === 'down') {
+  if (direction === 'down' && direction !== 'up') {
     snake.shift();
     snake.push({ x: head.x, y: head.y + size });
   }
-  if (direction === 'up') {
+  if (direction === 'up' && direction !== 'down') {
     snake.shift();
     snake.push({ x: head.x, y: head.y - size });
   }
+  audioFundo.play();
 }
 
 function gameloop() {
@@ -78,7 +80,7 @@ function gameloop() {
   drawSnake();
   drawFruta();
   colidionFruit();
-
+  autoColidion();
   idLoop = setInterval(() => {
     gameloop();
   }, 100);
@@ -87,10 +89,28 @@ function gameloop() {
 gameloop();
 
 document.addEventListener('keydown', ({ key }) => {
-  if (key === 'ArrowRight' && direction !== 'left') direction = 'right';
-  if (key === 'ArrowLeft' && direction !== 'right') direction = 'left';
-  if (key === 'ArrowUp' && direction !== 'down') direction = 'up';
-  if (key === 'ArrowDown' && direction !== 'up') direction = 'down';
+  if (key === 'ArrowRight' && direction !== 'left') {
+    setTimeout(() => {
+      direction = 'right';
+    });
+  }
+  if (key === 'ArrowLeft' && direction !== 'right') {
+    setTimeout(() => {
+      direction = 'left';
+    });
+  }
+
+  if (key === 'ArrowUp' && direction !== 'down') {
+    setTimeout(() => {
+      direction = 'up';
+    });
+  }
+
+  if (key === 'ArrowDown' && direction !== 'up') {
+    setTimeout(() => {
+      direction = 'down';
+    });
+  }
 });
 
 function gerarPosicaoX() {
@@ -112,12 +132,43 @@ function colidionFruit() {
     fruta.y === snake[snake.length - 1].y
   ) {
     audio.play();
+    contarPontos(size);
     setTimeout(() => {
       snake.push(fruta);
       setTimeout(() => {
         fruta.x = gerarPosicaoX();
         fruta.y = gerarPosicaoY();
-      }, 200);
+      }, 100);
     });
   }
+}
+
+function autoColidion() {
+  const cabeça = snake[snake.length - 1];
+  snake.slice(0, -1).forEach((item) => {
+    if (item.x === cabeça.x && item.y === cabeça.y) {
+      setTimeout(() => {
+        direction = '';
+        gameover();
+      }, 200);
+    }
+  });
+}
+
+function gameover() {
+  const displayGameOver = document.querySelector('.gameover');
+  displayGameOver.style.display = 'flex';
+  contexto.filter = 'blur(4px)';
+  direction = '';
+  contagem = 0;
+  clearInterval(idLoop);
+  audioFundo.pause();
+  document.removeEventListener('keydown', { key });
+}
+let contagem = 0;
+function contarPontos(ponto) {
+  const pontos = document.querySelector('h1 span');
+  contagem += 30;
+
+  pontos.innerHTML = contagem;
 }

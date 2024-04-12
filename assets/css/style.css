@@ -16,3 +16,28 @@ body {
 canvas {
   background-color: #121212;
 }
+
+.container {
+  position: relative;
+}
+
+.gameover {
+  color: red;
+  z-index: 11;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, -50%);
+
+  & h1 {
+    width: 100%;
+  }
+  & button {
+    box-sizing: border-box;
+    /* padding: 5px 0px; */
+  }
+}
